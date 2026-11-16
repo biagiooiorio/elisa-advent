@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+// Node's strip-types runner needs the .ts specifier; the app tsconfig rejects it.
+// @ts-expect-error TS5097 -- allowImportingTsExtensions is intentionally off.
 import { giftByDay, gifts } from "./gifts.ts";
 
 const KINDS = new Set(["messaggio", "attivita", "promessa", "sorpresa"]);

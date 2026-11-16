@@ -1,12 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  doorState,
-  isToday,
-  isUnlocked,
-  parseSimDate,
-  unlockLabel,
-} from "./unlock.ts";
+// Node's strip-types runner needs the .ts specifier; the app tsconfig rejects it.
+// @ts-expect-error TS5097 -- allowImportingTsExtensions is intentionally off.
+import { doorState, isToday, isUnlocked, parseSimDate, unlockLabel } from "./unlock.ts";
 
 describe("isUnlocked", () => {
   it("opens door 1 just after local midnight on 1 December 2026", () => {
