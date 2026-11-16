@@ -446,16 +446,6 @@ a:focus-visible,
   box-shadow: 0 0 0 var(--ink);
 }
 
-.reveal-demo {
-  margin: 0 0 18px;
-}
-
-.reveal-demo:disabled {
-  cursor: progress;
-  color: var(--ink);
-  opacity: 1;
-}
-
 .confetti {
   position: absolute;
   inset: 0;

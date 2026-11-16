@@ -29,8 +29,10 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## GitHub Pages
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Il sito è statico. Un push su `main` esegue il workflow `.github/workflows/pages.yml`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Nelle impostazioni del repository, la sorgente di Pages deve essere "GitHub Actions". Se il repository si chiama `elisa-advent`, l'URL del progetto sarà `https://<user>.github.io/elisa-advent/`.
+
+In locale, `npm run dev` resta invariato.
