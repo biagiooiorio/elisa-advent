@@ -1,24 +1,175 @@
-import type { Gift, GiftKind } from "@/lib/types";
+import type { Gift } from "@/lib/types";
 
-const KINDS: readonly GiftKind[] = [
-  "messaggio",
-  "attivita",
-  "promessa",
-  "sorpresa",
+export const gifts: Gift[] = [
+  {
+    day: 1,
+    kind: "messaggio",
+    sticker: "✉️",
+    title: "Si comincia.",
+    body: "Elisa, questa è la prima porta. Dietro le altre ci sono biglietti, piccole missioni e promesse. Non c'è niente da accedere e niente da dimostrare: se la porta è aperta, il regalo è tuo. Tieniti questo calendario fino a Natale.",
+  },
+  {
+    day: 2,
+    kind: "attivita",
+    sticker: "☕",
+    title: "Cacao delle nove.",
+    body: "Stasera prepara una cioccolata calda come la faresti per qualcuno che ti aspetta. Tazza grande, fuoco basso, niente fretta. Se vuoi, aggiungi un pizzico di sale. Bevila vicino a una finestra e guarda fuori per due minuti interi.",
+  },
+  {
+    day: 3,
+    kind: "sorpresa",
+    sticker: "⭐",
+    title: "Una frase da tenere.",
+    body: "Frase di oggi: Puoi arrivare dopo, la luce resta accesa. Scrivila dove la rivedi, su un foglietto nello specchio o nella custodia del telefono. Non spiegarla a nessuno, a meno che ti vada.",
+  },
+  {
+    day: 4,
+    kind: "attivita",
+    sticker: "🚶",
+    title: "Dieci minuti di luci.",
+    body: "Esci dieci minuti, anche solo fino in fondo alla via. Cerca tre luci che ti piacciono: una vetrina, una finestra, un lampione. Torna a casa e annota solo i colori, non i posti.",
+  },
+  {
+    day: 5,
+    kind: "messaggio",
+    sticker: "💛",
+    title: "Cose che restano.",
+    body: "Tre cose che questo calendario dà per vere, anche nei giorni storti: hai tempo per una porta sola, non per tutte insieme. Una cosa piccola conta. E se salti un giorno, la porta ti aspetta, non ti giudica.",
+  },
+  {
+    day: 6,
+    kind: "attivita",
+    sticker: "🎵",
+    title: "Playlist del plaid.",
+    body: "Metti insieme sei canzoni per una sera sotto una coperta. Due lente, due che ti fanno muovere i piedi, due che sembrano una lettera. Niente lista perfetta: se una ti imbarazza un po', è quella giusta. Ascoltale tutte, una volta. Non citare testi protetti.",
+  },
+  {
+    day: 7,
+    kind: "promessa",
+    sticker: "🎟️",
+    title: "Un favore in tasca.",
+    body: "Questo biglietto vale un favore piccolo, da chiedere quando vuoi: una commissione, un barattolo aperto, una cosa portata su per le scale, venti minuti di compagnia senza consiglio. Non scade a gennaio.",
+  },
+  {
+    day: 8,
+    kind: "messaggio",
+    sticker: "🌙",
+    title: "Domani mattina.",
+    body: "Se domani ti svegli di malumore, non devi sistemare la giornata intera. Sistema solo la prima mezz'ora: acqua, finestra aperta, una cosa calda. Il resto può arrivare dopo, come le porte di questo calendario.",
+  },
+  {
+    day: 9,
+    kind: "attivita",
+    sticker: "🍪",
+    title: "Biscotti storti.",
+    body: "Fai una teglia semplice: 100 g di burro morbido, 50 g di zucchero, 150 g di farina, un pizzico di sale. Impasta, schiaccia i pezzi con una forchetta, 15 minuti a 180 gradi. Vanno bene storti. Se non cucini, comprane uno e dagli un nome.",
+  },
+  {
+    day: 10,
+    kind: "sorpresa",
+    sticker: "❄️",
+    title: "Indovinello.",
+    body: "Non ha gambe e cammina sui tetti, non ha voce e fa zittire la strada. Al mattino è già andata via, ma lascia il davanzale più morbido. La risposta è la neve. Se oggi non nevica, aprila lo stesso: vale come credito.",
+  },
+  {
+    day: 11,
+    kind: "messaggio",
+    sticker: "📮",
+    title: "Lettera di metà strada.",
+    body: "Sei all'undici. Non serve sentirsi natalizi per continuare. Questo calendario non misura quanto sei festosa. Misura solo che sei arrivata fin qui, una porta alla volta. Per oggi basta.",
+  },
+  {
+    day: 12,
+    kind: "attivita",
+    sticker: "🎬",
+    title: "Film sotto la coperta.",
+    body: "Scegli un film che conosci già, così non devi dimostrare niente a nessuno. Regola: coperta, luce bassa, telefono in un'altra stanza per il primo quarto d'ora. Se ti addormenti, il film ha fatto il suo lavoro.",
+  },
+  {
+    day: 13,
+    kind: "promessa",
+    sticker: "🥐",
+    title: "Colazione lenta.",
+    body: "Questo buono vale una colazione lenta preparata per te: qualcosa di caldo, un frutto, e il tavolo sparecchiato da qualcun altro. Da riscuotere in un mattino a tua scelta, anche a gennaio inoltrato.",
+  },
+  {
+    day: 14,
+    kind: "messaggio",
+    sticker: "🕯️",
+    title: "Metà dicembre.",
+    body: "Oggi è la porta quattordici, la metà oltre la metà. Accendi una candela o, se non ne hai, una lampada piccola. Spegnila solo quando hai finito di leggere. La fiamma non deve significare niente di solenne.",
+  },
+  {
+    day: 15,
+    kind: "attivita",
+    sticker: "📝",
+    title: "Lettera per l'anno prossimo.",
+    body: "Scrivi dieci righe a te stessa fra un anno. Niente propositi: solo com'è oggi la luce, cosa ti pesa, cosa ti ha fatto ridere di recente. Chiudi il foglio. Il biglietto di carta si riapre il Natale prossimo; questa porta, invece, puoi rileggerla subito.",
+  },
+  {
+    day: 16,
+    kind: "sorpresa",
+    sticker: "🎁",
+    title: "Oggetto già in casa.",
+    body: "Il regalo di oggi è già in casa. Cerca una cosa rossa che non usi da un po': un nastro, una tazza, un libro, un calzino solo. Mettila sul tavolo fino a domani. Le cose ferme diventano più gentili se le guardi apposta.",
+  },
+  {
+    day: 17,
+    kind: "messaggio",
+    sticker: "🌿",
+    title: "Tre cose vere.",
+    body: "Uno: non devi rispondere a tutti oggi. Due: una passeggiata corta conta come uscita. Tre: puoi voler bene a dicembre anche se salti la cena, l'albero o il messaggio di auguri. Tieni queste tre e lascia il resto.",
+  },
+  {
+    day: 18,
+    kind: "attivita",
+    sticker: "✏️",
+    title: "Ritratto dei quattro minuti.",
+    body: "Prendi un foglio e una penna. Disegna una persona a cui vuoi bene, in quattro minuti, senza cancellare. Il naso può essere una virgola. Quando il tempo finisce, firmi e lo lasci in vista. Non si rifà.",
+  },
+  {
+    day: 19,
+    kind: "promessa",
+    sticker: "📵",
+    title: "Sera senza schermo.",
+    body: "Un buono per una sera in cui il telefono resta in cucina dopo cena. Al suo posto: carte, un libro, o il soffitto. Se la sera si rompe a metà, il buono non è perso. Si riprende dal punto in cui era rimasto.",
+  },
+  {
+    day: 20,
+    kind: "messaggio",
+    sticker: "🔔",
+    title: "Mancano quattro porte.",
+    body: "Venti. Da qui si vede la fine, e va bene non avere ancora fatto niente di spettacolare. Le porte che hai aperto restano aperte. Quelle che non hai aperto ti aspettano ancora, senza fare la voce grossa.",
+  },
+  {
+    day: 21,
+    kind: "attivita",
+    sticker: "🍲",
+    title: "Menu della vigilia.",
+    body: "Scrivi un menu di tre righe per una sera lenta: una cosa da mangiare con le mani, una cosa calda, una cosa dolce che non va preparata. Non deve impressionare nessuno. Deve solo essere facile da volere.",
+  },
+  {
+    day: 22,
+    kind: "sorpresa",
+    sticker: "⭐",
+    title: "Un desiderio spendibile.",
+    body: "Hai un desiderio piccolo da spendere con chi ti sta vicino: una canzone messa senza discussione, la scelta del divano, l'ultima fetta, la strada più lunga per tornare a casa. Dillo ad alta voce. Scade quando lo usi.",
+  },
+  {
+    day: 23,
+    kind: "messaggio",
+    sticker: "🧦",
+    title: "Vigilia della vigilia.",
+    body: "Domani è l'ultima porta. Se questa settimana è stata piena, metti una cosa in ordine e lascia stare le altre: il lavandino, o il tavolo, o il letto. Una sola. Poi siediti. Il calendario non chiede di più.",
+  },
+  {
+    day: 24,
+    kind: "messaggio",
+    sticker: "🎄",
+    title: "Buon Natale, Elisa.",
+    body: "Ultima porta. Buon Natale. Non come slogan: come un posto a tavola tenuto libero anche se arrivi tardi, con le scarpe bagnate e una storia a metà. Questo calendario era solo il corridoio. La stanza è tua. Torna alle porte quando vuoi rileggerle: da oggi restano tutte aperte.",
+  },
 ];
-
-const STICKERS = ["🎁", "⭐", "🎄", "🔔", "🍪", "🧦"] as const;
-
-export const gifts: Gift[] = Array.from({ length: 24 }, (_, index) => {
-  const day = index + 1;
-  return {
-    day,
-    title: `Giorno ${day}`,
-    body: "Segnaposto.",
-    kind: KINDS[index % KINDS.length]!,
-    sticker: STICKERS[index % STICKERS.length]!,
-  };
-});
 
 export function giftByDay(day: number): Gift | undefined {
   return gifts.find((gift) => gift.day === day);
