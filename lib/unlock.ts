@@ -38,6 +38,40 @@ export function unlockLabel(day: number): string {
   return `${day} dicembre`;
 }
 
+export function campaignStart(): Date {
+  return new Date(CAMPAIGN_YEAR, DECEMBER, 1, 0, 0, 0, 0);
+}
+
+export function isBeforeCampaign(now: Date): boolean {
+  return now.getTime() < campaignStart().getTime();
+}
+
+export function isRevealDay(now: Date): boolean {
+  return (
+    now.getFullYear() === CAMPAIGN_YEAR &&
+    now.getMonth() === DECEMBER &&
+    now.getDate() === 1
+  );
+}
+
+export type CountdownParts = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
+export function countdownToStart(now: Date): CountdownParts {
+  const remaining = Math.max(0, campaignStart().getTime() - now.getTime());
+  const totalSeconds = Math.floor(remaining / 1000);
+  return {
+    days: Math.floor(totalSeconds / 86_400),
+    hours: Math.floor((totalSeconds % 86_400) / 3_600),
+    minutes: Math.floor((totalSeconds % 3_600) / 60),
+    seconds: totalSeconds % 60,
+  };
+}
+
 const SIM_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 // Local noon, then reject values JS would roll into another calendar day.

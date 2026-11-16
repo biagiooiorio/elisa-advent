@@ -21,6 +21,7 @@ export type DoorProps = {
   status?: DoorState;
   state?: DoorState;
   shaking?: boolean;
+  delayMs?: number;
   onOpen?: (day: number) => void;
   onLocked?: (day: number) => void;
   onClick?: (opener: HTMLButtonElement) => void;
@@ -62,6 +63,7 @@ export function Door({
   opened,
   sticker,
   shaking = false,
+  delayMs,
   onOpen,
   onLocked,
   onClick,
@@ -131,11 +133,12 @@ export function Door({
     <button
       type="button"
       className={className}
-      style={
-        doorStatus === "locked"
-          ? undefined
-          : { backgroundColor: DOOR_FILLS[(day - 1) % 6] }
-      }
+      style={{
+        ...(doorStatus === "locked"
+          ? {}
+          : { backgroundColor: DOOR_FILLS[(day - 1) % 6] }),
+        ...(delayMs === undefined ? {} : { animationDelay: `${delayMs}ms` }),
+      }}
       aria-label={doorAriaLabel(day, doorStatus, opened, sticker)}
       onClick={handleClick}
     >

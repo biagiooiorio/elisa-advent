@@ -2,7 +2,16 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 // Node's strip-types runner needs the .ts specifier; the app tsconfig rejects it.
 // @ts-expect-error TS5097 -- allowImportingTsExtensions is intentionally off.
-import { doorState, isToday, isUnlocked, parseSimDate, unlockLabel } from "./unlock.ts";
+import {
+  countdownToStart,
+  doorState,
+  isBeforeCampaign,
+  isRevealDay,
+  isToday,
+  isUnlocked,
+  parseSimDate,
+  unlockLabel,
+} from "./unlock.ts";
 
 describe("isUnlocked", () => {
   it("opens door 1 just after local midnight on 1 December 2026", () => {
@@ -69,6 +78,21 @@ describe("unlockLabel", () => {
   it("formats the Italian day label", () => {
     assert.equal(unlockLabel(1), "1 dicembre");
     assert.equal(unlockLabel(24), "24 dicembre");
+  });
+});
+
+describe("countdown", () => {
+  it("counts local time until 1 December 2026", () => {
+    assert.equal(isBeforeCampaign(new Date(2026, 10, 30, 23, 59)), true);
+    assert.equal(isBeforeCampaign(new Date(2026, 11, 1, 0, 0, 0)), false);
+    assert.equal(isRevealDay(new Date(2026, 11, 1, 8, 0)), true);
+    assert.equal(isRevealDay(new Date(2026, 11, 2, 0, 0)), false);
+
+    const midnight = countdownToStart(new Date(2026, 10, 16, 0, 0, 0));
+    assert.deepEqual(midnight, { days: 15, hours: 0, minutes: 0, seconds: 0 });
+
+    const almost = countdownToStart(new Date(2026, 10, 30, 23, 59, 58));
+    assert.deepEqual(almost, { days: 0, hours: 0, minutes: 0, seconds: 2 });
   });
 });
 

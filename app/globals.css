@@ -115,10 +115,55 @@ a:focus-visible,
   font-weight: 800;
 }
 
+.countdown-lead {
+  margin: 4px 0 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 128px;
+  padding: 16px 10px;
+  background: var(--card);
+  border: var(--line);
+  box-shadow: var(--shadow);
+}
+
+.countdown-value {
+  font-family: var(--font-archivo), "Archivo Black", sans-serif;
+  font-size: clamp(2.6rem, 8vw, 4.6rem);
+  font-weight: 400;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .advent-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.advent-grid.is-revealing .door {
+  animation: door-reveal 640ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .door {
@@ -334,6 +379,11 @@ a:focus-visible,
   pointer-events: none;
 }
 
+.confetti-reveal {
+  position: fixed;
+  z-index: 40;
+}
+
 .confetti-bit {
   --dx: 48px;
   --dy: -88px;
@@ -418,6 +468,7 @@ a:focus-visible,
 }
 
 @media (min-width: 800px) {
+  .countdown-grid,
   .advent-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -426,6 +477,18 @@ a:focus-visible,
 @media (min-width: 1040px) {
   .advent-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@keyframes door-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
