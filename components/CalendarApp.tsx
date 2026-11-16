@@ -1,19 +1,11 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Door } from "@/components/Door";
 import { GiftDialog } from "@/components/GiftDialog";
-import { PreviewPanel } from "@/components/PreviewPanel";
 import { giftByDay, gifts } from "@/data/gifts";
-import { doorState, parseSimDate, unlockLabel } from "@/lib/unlock";
-import {
-  OPENED_KEY,
-  SIM_KEY,
-  readOpened,
-  readSimDate,
-  writeOpened,
-  writeSimDate,
-} from "@/lib/storage";
+import { doorState, unlockLabel } from "@/lib/unlock";
+import { OPENED_KEY, readOpened, writeOpened } from "@/lib/storage";
 import type { Gift } from "@/lib/types";
 
 const EMPTY_OPENED: number[] = [];
@@ -29,8 +21,6 @@ const CONFETTI_MS = 1800;
 const storeListeners = new Set<() => void>();
 let openedCache: number[] = EMPTY_OPENED;
 let openedCached = false;
-let simCache: string | null = null;
-let simCached = false;
 let storageBound = false;
 
 let clockCache: Date | null = null;
@@ -56,11 +46,8 @@ function subscribeStore(listener: () => void): () => void {
 }
 
 function onStorageEvent(event: StorageEvent): void {
-  if (event.key !== null && event.key !== OPENED_KEY && event.key !== SIM_KEY) {
-    return;
-  }
+  if (event.key !== null && event.key !== OPENED_KEY) return;
   openedCached = false;
-  simCached = false;
   emitStore();
 }
 
@@ -77,31 +64,10 @@ function getOpenedServerSnapshot(): number[] {
   return EMPTY_OPENED;
 }
 
-function getSimSnapshot(): string | null {
-  if (typeof window === "undefined") return null;
-  if (!simCached) {
-    simCache = readSimDate();
-    simCached = true;
-  }
-  return simCache;
-}
-
-function getSimServerSnapshot(): string | null {
-  return null;
-}
-
 function commitOpened(days: readonly number[]): void {
   writeOpened(days);
   openedCache = readOpened();
   openedCached = true;
-  emitStore();
-}
-
-function commitSim(value: string | null): void {
-  writeSimDate(value);
-  simCache = readSimDate();
-  simCached = true;
-  if (simCache === null) publishClock();
   emitStore();
 }
 
@@ -175,11 +141,6 @@ export default function CalendarApp() {
     getOpenedSnapshot,
     getOpenedServerSnapshot,
   );
-  const simValue = useSyncExternalStore(
-    subscribeStore,
-    getSimSnapshot,
-    getSimServerSnapshot,
-  );
   const clock = useSyncExternalStore(
     subscribeClock,
     getClockSnapshot,
@@ -194,10 +155,13 @@ export default function CalendarApp() {
   const shakeStop = useRef<number | null>(null);
   const confettiTimer = useRef<number | null>(null);
   const dialogOpenerRef = useRef<HTMLButtonElement | null>(null);
-  const previewToggleRef = useRef<HTMLButtonElement | null>(null);
-  const returnFromSimRef = useRef(false);
 
   useEffect(() => {
+    try {
+      window.localStorage.removeItem("elisa-advent-sim-v1");
+    } catch {
+      // A blocked store cannot reveal a saved preview date.
+    }
     return () => {
       if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
       if (shakeStart.current !== null) window.clearTimeout(shakeStart.current);
@@ -208,14 +172,7 @@ export default function CalendarApp() {
     };
   }, []);
 
-  const simDate = simValue === null ? null : parseSimDate(simValue);
-  const now = simDate ?? clock;
-
-  useLayoutEffect(() => {
-    if (!returnFromSimRef.current || simValue !== null) return;
-    returnFromSimRef.current = false;
-    previewToggleRef.current?.focus();
-  }, [simValue]);
+  const now = clock;
 
   function queueToast(text: string): void {
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
@@ -256,13 +213,8 @@ export default function CalendarApp() {
     }, CONFETTI_MS);
   }
 
-  function exitSimulation(): void {
-    returnFromSimRef.current = true;
-    commitSim(null);
-  }
-
   function selectDoor(day: number, opener?: HTMLButtonElement): void {
-    const current = simDate ?? clock;
+    const current = clock;
     if (!current || doorState(day, current) === "locked") {
       queueToast(`Si apre il ${unlockLabel(day)}.`);
       queueShake(day);
@@ -285,16 +237,10 @@ export default function CalendarApp() {
       <div className="advent-wrap">
         <header className="advent-header">
           <p className="advent-kicker">per Elisa · 2026</p>
-          <h1 className="advent-title">Ciao Elisa, il tuo calendario dell&apos;avvento :)</h1>
+          <h1 className="advent-title">Ciao Elisa,<br />che troverai oggi?</h1>
           <p className="advent-lede">Una porta al giorno. Le altre aspettano.</p>
         </header>
         <p className="advent-status">{statusMessage(now)}</p>
-        {simDate ? (
-          <div className="sim-banner" role="status">
-            <p>{`Modalità prova: stai guardando il ${simDate.getDate()} dicembre 2026.`}</p>
-            <button type="button" className="btn" onClick={exitSimulation}>Torna a oggi</button>
-          </div>
-        ) : null}
         <div className="advent-grid">
           {gifts.map((gift) => {
             const state = now ? doorState(gift.day, now) : "locked";
@@ -330,14 +276,6 @@ export default function CalendarApp() {
             ))}
           </div>
         ) : null}
-        <footer>
-          <PreviewPanel
-            simDate={simValue}
-            onPick={commitSim}
-            toggleRef={previewToggleRef}
-          />
-          <p>Per cambiare i regali, modifica data/gifts.ts.</p>
-        </footer>
       </div>
     </main>
   );

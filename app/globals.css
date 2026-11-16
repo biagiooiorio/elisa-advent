@@ -10,8 +10,7 @@
 
 :root {
   --ink: #141414;
-  --paper: #ffe7c2;
-  --stripe: #ffd59a;
+  --paper: #ffffff;
   --card: #fffdf8;
   --locked: #f4e2c0;
   --shadow: 6px 6px 0 var(--ink);
@@ -31,11 +30,6 @@ body {
   font-weight: 500;
   line-height: 1.45;
   background-color: var(--paper);
-  background-image: repeating-linear-gradient(
-    45deg,
-    var(--paper) 0 14px,
-    var(--stripe) 14px 28px
-  );
 }
 
 ::selection {
@@ -60,11 +54,6 @@ a:focus-visible,
   min-height: 100%;
   color: var(--ink);
   background-color: var(--paper);
-  background-image: repeating-linear-gradient(
-    45deg,
-    var(--paper) 0 14px,
-    var(--stripe) 14px 28px
-  );
 }
 
 .advent-wrap {
@@ -104,7 +93,6 @@ a:focus-visible,
 
 .advent-title {
   margin: 0;
-  max-width: 14ch;
   font-size: clamp(2.1rem, 6vw, 4.2rem);
   line-height: 0.92;
   letter-spacing: -0.03em;
@@ -338,92 +326,6 @@ a:focus-visible,
   box-shadow: 0 0 0 var(--ink);
 }
 
-.sim-banner {
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  font-weight: 800;
-  text-align: center;
-  background: #ffe14a;
-  border-bottom: var(--line);
-}
-
-.sim-banner[hidden] {
-  display: none;
-}
-
-.advent-page footer {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 36px;
-}
-
-.preview-slot {
-  display: contents;
-}
-
-.preview {
-  margin-top: 8px;
-  padding: 16px;
-  background: var(--card);
-  border: var(--line);
-  border-radius: 0;
-  box-shadow: var(--shadow);
-}
-
-.preview[hidden] {
-  display: none;
-}
-
-.preview-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.preview-grid[hidden] {
-  display: none;
-}
-
-.preview-grid button {
-  min-height: 44px;
-  padding: 8px 4px;
-  font-family: var(--font-archivo), "Archivo Black", sans-serif;
-  font-weight: 400;
-  font-synthesis: none;
-  cursor: pointer;
-  background: var(--card);
-  border: var(--line);
-  border-radius: 0;
-  box-shadow: 3px 3px 0 var(--ink);
-  transition:
-    transform 140ms ease,
-    box-shadow 140ms ease;
-}
-
-.preview-grid button:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 var(--ink);
-}
-
-.preview-grid button:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0 0 0 var(--ink);
-}
-
-.preview-grid button[aria-checked="true"] {
-  color: #ffe14a;
-  background: var(--ink);
-}
-
 .confetti {
   position: absolute;
   inset: 0;
@@ -513,29 +415,17 @@ a:focus-visible,
   .advent-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
-  .preview-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
 }
 
 @media (min-width: 800px) {
   .advent-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-
-  .preview-grid {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-  }
 }
 
 @media (min-width: 1040px) {
   .advent-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-
-  .preview-grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 }
 
@@ -581,7 +471,6 @@ a:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .door,
   .btn,
-  .preview-grid button,
   .confetti-bit,
   .is-shaking {
     transition: none;
@@ -592,8 +481,6 @@ a:focus-visible,
   .door:active,
   .btn:hover,
   .btn:active,
-  .preview-grid button:hover,
-  .preview-grid button:active,
   .is-shaking {
     transform: none;
   }

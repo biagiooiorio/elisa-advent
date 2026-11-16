@@ -1,9 +1,4 @@
-import { parseSimDate } from "@/lib/unlock";
-
 export const OPENED_KEY = "elisa-advent-opened-v1";
-export const SIM_KEY = "elisa-advent-sim-v1";
-
-const PREVIEW_DATE = /^2026-12-(0[1-9]|1\d|2[0-4])$/;
 
 function storage(): Storage | null {
   try {
@@ -56,33 +51,3 @@ export function writeOpened(days: readonly number[]): void {
   }
 }
 
-function isPreviewDate(value: string): boolean {
-  return PREVIEW_DATE.test(value) && parseSimDate(value) !== null;
-}
-
-export function readSimDate(): string | null {
-  const store = storage();
-  if (!store) return null;
-  try {
-    const raw = store.getItem(SIM_KEY);
-    if (!raw || !isPreviewDate(raw)) return null;
-    return raw;
-  } catch {
-    return null;
-  }
-}
-
-export function writeSimDate(value: string | null): void {
-  const store = storage();
-  if (!store) return;
-  try {
-    if (value === null) {
-      store.removeItem(SIM_KEY);
-      return;
-    }
-    if (!isPreviewDate(value)) return;
-    store.setItem(SIM_KEY, value);
-  } catch {
-    // Private mode and quota failures leave the previous value in place.
-  }
-}
