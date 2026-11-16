@@ -41,7 +41,7 @@ export const gifts: Gift[] = [
     kind: "attivita",
     sticker: "🎵",
     title: "Playlist del plaid.",
-    body: "Metti insieme sei canzoni per una sera sotto una coperta. Due lente, due che ti fanno muovere i piedi, due che sembrano una lettera. Niente lista perfetta: se una ti imbarazza un po', è quella giusta. Ascoltale tutte, una volta. Non citare testi protetti.",
+    body: "Metti insieme sei canzoni per una sera sotto una coperta. Due lente, due che ti fanno muovere i piedi, due che sembrano una lettera. Niente lista perfetta: se una ti imbarazza un po', è quella giusta. Ascoltale tutte, una volta.",
   },
   {
     day: 7,

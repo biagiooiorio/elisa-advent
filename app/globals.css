@@ -68,6 +68,7 @@ a:focus-visible,
 }
 
 .advent-wrap {
+  position: relative;
   width: min(1120px, calc(100% - 32px));
   margin-inline: auto;
   padding-block: 32px 56px;
