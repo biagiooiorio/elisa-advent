@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useEffectEvent, useId, useLayoutEffect, useRef, type RefObject } from "react";
 import type { Gift, GiftKind } from "@/lib/types";
 import { unlockLabel } from "@/lib/unlock";
 
@@ -23,6 +23,7 @@ const FOCUSABLE_SELECTOR = [
 export type GiftDialogProps = {
   gift: Gift | null;
   onClose: () => void;
+  openerRef?: RefObject<HTMLElement | null>;
 };
 
 function focusableElements(root: HTMLElement): HTMLElement[] {
@@ -31,50 +32,83 @@ function focusableElements(root: HTMLElement): HTMLElement[] {
   ).filter((element) => element.tabIndex >= 0);
 }
 
-export function GiftDialog({ gift, onClose }: GiftDialogProps) {
+type BackgroundState = {
+  element: HTMLElement;
+  inert: boolean;
+  ariaHidden: string | null;
+};
+
+function inertBackground(dialogRoot: HTMLElement): () => void {
+  const restore: BackgroundState[] = [];
+  let node: HTMLElement = dialogRoot;
+
+  for (;;) {
+    const parent = node.parentElement;
+    if (parent === null) break;
+    for (const child of Array.from(parent.children)) {
+      if (!(child instanceof HTMLElement) || child === node) continue;
+      restore.push({
+        element: child,
+        inert: child.inert,
+        ariaHidden: child.getAttribute("aria-hidden"),
+      });
+      child.inert = true;
+      child.setAttribute("aria-hidden", "true");
+    }
+    if (parent === document.body) break;
+    node = parent;
+  }
+
+  return () => {
+    for (const item of restore) {
+      item.element.inert = item.inert;
+      if (item.ariaHidden === null) item.element.removeAttribute("aria-hidden");
+      else item.element.setAttribute("aria-hidden", item.ariaHidden);
+    }
+  };
+}
+
+export function GiftDialog({ gift, onClose, openerRef }: GiftDialogProps) {
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const backRef = useRef<HTMLDivElement>(null);
   const openDay = gift?.day ?? null;
+  const requestClose = useEffectEvent(() => {
+    onClose();
+  });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (openDay === null) return;
 
-    const previous = document.activeElement;
-    const returnTo = previous instanceof HTMLElement ? previous : null;
+    const returnTo = openerRef?.current ?? null;
+    const root = backRef.current;
     closeRef.current?.focus();
-
-    return () => {
-      // The opener (the door) is focused again when the dialog closes.
-      if (returnTo !== null && returnTo.isConnected) returnTo.focus();
-    };
-  }, [openDay]);
-
-  useEffect(() => {
-    if (openDay === null) return;
+    // After the close button is focused, hide the rest of the page from Tab and AT.
+    const releaseInert = root ? inertBackground(root) : () => {};
 
     function onKeyDown(event: KeyboardEvent): void {
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();
-        onClose();
+        requestClose();
         return;
       }
 
       if (event.key !== "Tab") return;
 
-      const root = cardRef.current;
-      if (!root) return;
+      const dialog = cardRef.current;
+      if (!dialog) return;
 
-      const focusable = focusableElements(root);
+      const focusable = focusableElements(dialog);
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       if (!first || !last) return;
 
       const active = document.activeElement;
       const leaving = event.shiftKey
-        ? active === first || !root.contains(active)
-        : active === last || !root.contains(active);
+        ? active === first || !dialog.contains(active)
+        : active === last || !dialog.contains(active);
 
       if (!leaving) return;
 
@@ -83,13 +117,18 @@ export function GiftDialog({ gift, onClose }: GiftDialogProps) {
     }
 
     document.addEventListener("keydown", onKeyDown, true);
-    return () => document.removeEventListener("keydown", onKeyDown, true);
-  }, [openDay, onClose]);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown, true);
+      releaseInert();
+      if (returnTo !== null && returnTo.isConnected) returnTo.focus();
+    };
+  }, [openDay, openerRef]);
 
   if (!gift) return null;
 
   return (
     <div
+      ref={backRef}
       className="dialog-back"
       role="presentation"
       onClick={(event) => {

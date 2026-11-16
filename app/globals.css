@@ -363,6 +363,10 @@ a:focus-visible,
   margin-top: 36px;
 }
 
+.preview-slot {
+  display: contents;
+}
+
 .preview {
   margin-top: 8px;
   padding: 16px;
@@ -413,7 +417,7 @@ a:focus-visible,
   box-shadow: 0 0 0 var(--ink);
 }
 
-.preview-grid button[aria-pressed="true"] {
+.preview-grid button[aria-checked="true"] {
   color: #ffe14a;
   background: var(--ink);
 }

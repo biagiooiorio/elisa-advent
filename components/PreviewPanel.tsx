@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { parseSimDate } from "@/lib/unlock";
 
 const PREVIEW_DAYS = [
@@ -17,6 +26,7 @@ export type PreviewPanelProps = {
   activeDay?: number | null;
   simDate?: string | null;
   onPick?: (value: string | null) => void;
+  toggleRef?: RefObject<HTMLButtonElement | null>;
 };
 
 function dayFromSim(value: string | null | undefined): number | null {
@@ -33,6 +43,16 @@ function simStamp(day: number): string {
   return `2026-12-${String(day).padStart(2, "0")}`;
 }
 
+function focusInsideWasRemoved(
+  root: HTMLElement | null,
+  active: Element | null,
+): boolean {
+  if (active === null || active === document.body || active === document.documentElement) {
+    return true;
+  }
+  return root !== null && root.contains(active);
+}
+
 export function PreviewPanel({
   open,
   onClose,
@@ -42,13 +62,26 @@ export function PreviewPanel({
   activeDay = null,
   simDate,
   onPick,
+  toggleRef: externalToggleRef,
 }: PreviewPanelProps) {
+  const gridId = useId();
   const selfManaged =
     onPick !== undefined && open === undefined && onToggle === undefined;
   const [selfOpen, setSelfOpen] = useState(false);
   const panelOpen = selfManaged ? selfOpen : Boolean(open);
   const pressedDay = selfManaged ? dayFromSim(simDate) : activeDay;
   const rootRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const wasOpenRef = useRef(panelOpen);
+
+  const bindToggle = useCallback(
+    (node: HTMLButtonElement | null) => {
+      toggleRef.current = node;
+      if (externalToggleRef) externalToggleRef.current = node;
+    },
+    [externalToggleRef],
+  );
 
   const dismiss = useEffectEvent(() => {
     onClose?.();
@@ -95,35 +128,48 @@ export function PreviewPanel({
     };
   }, [panelOpen]);
 
-  if (!panelOpen) {
-    return (
-      <button
-        type="button"
-        className="btn"
-        aria-expanded={false}
-        onClick={toggle}
-      >
-        Prova un altro giorno
-      </button>
-    );
-  }
+  useLayoutEffect(() => {
+    const wasOpen = wasOpenRef.current;
+    wasOpenRef.current = panelOpen;
+    if (wasOpen === panelOpen) return;
+
+    if (panelOpen) {
+      gridRef.current?.focus();
+      return;
+    }
+
+    const active = document.activeElement;
+    if (!focusInsideWasRemoved(rootRef.current, active)) return;
+    toggleRef.current?.focus();
+  }, [panelOpen]);
 
   return (
-    <div className="preview" ref={rootRef}>
+    <div ref={rootRef} className={panelOpen ? "preview" : "preview-slot"}>
       <button
+        ref={bindToggle}
         type="button"
         className="btn"
-        aria-expanded={true}
+        aria-expanded={panelOpen}
+        aria-controls={gridId}
         onClick={toggle}
       >
         Prova un altro giorno
       </button>
-      <div className="preview-grid">
+      <div
+        ref={gridRef}
+        id={gridId}
+        className="preview-grid"
+        role="radiogroup"
+        aria-label="dicembre 2026"
+        hidden={!panelOpen}
+        tabIndex={panelOpen ? -1 : undefined}
+      >
         {PREVIEW_DAYS.map((day) => (
           <button
             key={day}
             type="button"
-            aria-pressed={pressedDay === day}
+            role="radio"
+            aria-checked={pressedDay === day}
             onClick={() => pickDay(day)}
           >
             {day}
@@ -131,7 +177,8 @@ export function PreviewPanel({
         ))}
         <button
           type="button"
-          aria-pressed={pressedDay === null}
+          role="radio"
+          aria-checked={pressedDay === null}
           onClick={useRealDate}
           style={{ gridColumn: "1 / -1" }}
         >

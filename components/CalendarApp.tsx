@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Door } from "@/components/Door";
 import { GiftDialog } from "@/components/GiftDialog";
 import { PreviewPanel } from "@/components/PreviewPanel";
@@ -193,6 +193,9 @@ export default function CalendarApp() {
   const shakeStart = useRef<number | null>(null);
   const shakeStop = useRef<number | null>(null);
   const confettiTimer = useRef<number | null>(null);
+  const dialogOpenerRef = useRef<HTMLButtonElement | null>(null);
+  const previewToggleRef = useRef<HTMLButtonElement | null>(null);
+  const returnFromSimRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -207,6 +210,12 @@ export default function CalendarApp() {
 
   const simDate = simValue === null ? null : parseSimDate(simValue);
   const now = simDate ?? clock;
+
+  useLayoutEffect(() => {
+    if (!returnFromSimRef.current || simValue !== null) return;
+    returnFromSimRef.current = false;
+    previewToggleRef.current?.focus();
+  }, [simValue]);
 
   function queueToast(text: string): void {
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
@@ -247,7 +256,12 @@ export default function CalendarApp() {
     }, CONFETTI_MS);
   }
 
-  function selectDoor(day: number): void {
+  function exitSimulation(): void {
+    returnFromSimRef.current = true;
+    commitSim(null);
+  }
+
+  function selectDoor(day: number, opener?: HTMLButtonElement): void {
     const current = simDate ?? clock;
     if (!current || doorState(day, current) === "locked") {
       queueToast(`Si apre il ${unlockLabel(day)}.`);
@@ -262,6 +276,7 @@ export default function CalendarApp() {
       commitOpened([...opened, day]);
       queueConfetti();
     }
+    if (opener) dialogOpenerRef.current = opener;
     setActiveGift(gift);
   }
 
@@ -277,7 +292,7 @@ export default function CalendarApp() {
         {simDate ? (
           <div className="sim-banner" role="status">
             <p>{`Modalità prova: stai guardando il ${simDate.getDate()} dicembre 2026.`}</p>
-            <button type="button" className="btn" onClick={() => commitSim(null)}>Torna a oggi</button>
+            <button type="button" className="btn" onClick={exitSimulation}>Torna a oggi</button>
           </div>
         ) : null}
         <div className="advent-grid">
@@ -291,13 +306,17 @@ export default function CalendarApp() {
                 state={state}
                 opened={state !== "locked" && opened.includes(gift.day)}
                 shaking={shakingDay === gift.day}
-                onClick={() => selectDoor(gift.day)}
+                onClick={(opener) => selectDoor(gift.day, opener)}
               />
             );
           })}
         </div>
         {activeGift ? (
-          <GiftDialog gift={activeGift} onClose={() => setActiveGift(null)} />
+          <GiftDialog
+            gift={activeGift}
+            openerRef={dialogOpenerRef}
+            onClose={() => setActiveGift(null)}
+          />
         ) : null}
         {toast ? (
           <p className="toast" role="status">
@@ -312,7 +331,11 @@ export default function CalendarApp() {
           </div>
         ) : null}
         <footer>
-          <PreviewPanel simDate={simValue} onPick={commitSim} />
+          <PreviewPanel
+            simDate={simValue}
+            onPick={commitSim}
+            toggleRef={previewToggleRef}
+          />
           <p>Per cambiare i regali, modifica data/gifts.ts.</p>
         </footer>
       </div>

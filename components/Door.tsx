@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { DoorState } from "@/lib/unlock";
 
 const DOOR_FILLS = [
@@ -23,15 +23,21 @@ export type DoorProps = {
   shaking?: boolean;
   onOpen?: (day: number) => void;
   onLocked?: (day: number) => void;
-  onClick?: () => void;
+  onClick?: (opener: HTMLButtonElement) => void;
 };
 
-function doorAriaLabel(day: number, status: DoorState, opened: boolean): string {
+function doorAriaLabel(
+  day: number,
+  status: DoorState,
+  opened: boolean,
+  sticker: string,
+): string {
   if (status === "locked") {
     return `Giorno ${day}, chiuso. Si apre il ${day} dicembre.`;
   }
   if (opened) {
-    return `Giorno ${day}, già aperto. Rileggi il regalo.`;
+    const visible = status === "today" ? ` OGGI ${sticker}` : ` ${sticker}`;
+    return `Giorno ${day}, già aperto. Rileggi il regalo.${visible}`;
   }
   if (status === "today") {
     return `Giorno ${day}, oggi. Apri il regalo.`;
@@ -99,9 +105,9 @@ export function Door({
     armShakeEnd();
   }
 
-  function handleClick(): void {
+  function handleClick(event: MouseEvent<HTMLButtonElement>): void {
     if (onClick) {
-      onClick();
+      onClick(event.currentTarget);
       return;
     }
     if (doorStatus === "locked") {
@@ -130,7 +136,7 @@ export function Door({
           ? undefined
           : { backgroundColor: DOOR_FILLS[(day - 1) % 6] }
       }
-      aria-label={doorAriaLabel(day, doorStatus, opened)}
+      aria-label={doorAriaLabel(day, doorStatus, opened, sticker)}
       onClick={handleClick}
     >
       {doorStatus === "today" ? (
