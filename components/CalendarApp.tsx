@@ -285,7 +285,7 @@ export default function CalendarApp() {
       <div className="advent-wrap">
         <header className="advent-header">
           <p className="advent-kicker">per Elisa · 2026</p>
-          <h1 className="advent-title">Avvento</h1>
+          <h1 className="advent-title">Ciao Elisa, il tuo calendario dell&apos;avvento :)</h1>
           <p className="advent-lede">Una porta al giorno. Le altre aspettano.</p>
         </header>
         <p className="advent-status">{statusMessage(now)}</p>

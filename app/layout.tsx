@@ -16,7 +16,7 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Avvento di Elisa",
+  title: "Ciao Elisa, il tuo calendario dell'avvento :)",
   description:
     "Calendario dell'avvento per una persona sola. Una porta al giorno.",
 };
