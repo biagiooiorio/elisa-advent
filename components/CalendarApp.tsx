@@ -155,17 +155,26 @@ function Countdown({ now }: { now: Date | null }) {
 
   return (
     <section className="countdown" aria-label="Countdown al 1 dicembre 2026">
-      <p className="countdown-lead">Le porte arrivano il 1 dicembre.</p>
+      <p className="countdown-kicker">Mancano</p>
       <div className="countdown-grid">
-        {units.map(([kind, value]) => (
-          <div className="countdown-unit" key={kind}>
-            <span className="countdown-value">
-              {value === null ? "–" : String(value).padStart(2, "0")}
-            </span>
-            <span className="countdown-label">{countdownLabel(kind, value)}</span>
-          </div>
-        ))}
+        {units.map(([kind, value]) => {
+          const text = value === null ? "–" : String(value).padStart(2, "0");
+          return (
+            <div className={`countdown-unit countdown-${kind}`} key={kind}>
+              <div className="countdown-face" key={text}>
+                <div className="countdown-half countdown-half-top">
+                  <span className="countdown-value">{text}</span>
+                </div>
+                <div className="countdown-half countdown-half-bottom" aria-hidden="true">
+                  <span className="countdown-value">{text}</span>
+                </div>
+              </div>
+              <span className="countdown-label">{countdownLabel(kind, value)}</span>
+            </div>
+          );
+        })}
       </div>
+      <p className="countdown-lead">Le porte arrivano il 1 dicembre.</p>
     </section>
   );
 }
