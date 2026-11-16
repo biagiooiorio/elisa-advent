@@ -183,53 +183,20 @@ a:focus-visible,
 }
 
 .countdown-face {
-  position: relative;
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  place-items: center;
   min-height: 148px;
   overflow: hidden;
   background: var(--card);
   border: var(--line);
 }
 
-.countdown-face::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  right: 0;
-  left: 0;
-  height: 4px;
-  background: var(--ink);
-  transform: translateY(-50%);
-}
-
-.countdown-half {
-  position: relative;
-  overflow: hidden;
-}
-
 .countdown-value {
-  position: absolute;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 200%;
   font-family: var(--font-archivo), "Archivo Black", sans-serif;
   font-size: clamp(3rem, 8vw, 5.2rem);
   font-weight: 400;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-}
-
-.countdown-half-top .countdown-value {
-  top: 0;
-}
-
-.countdown-half-bottom .countdown-value {
-  bottom: 0;
 }
 
 .countdown-seconds .countdown-value {

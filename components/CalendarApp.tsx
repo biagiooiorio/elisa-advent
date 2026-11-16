@@ -161,13 +161,10 @@ function Countdown({ now }: { now: Date | null }) {
           const text = value === null ? "–" : String(value).padStart(2, "0");
           return (
             <div className={`countdown-unit countdown-${kind}`} key={kind}>
-              <div className="countdown-face" key={text}>
-                <div className="countdown-half countdown-half-top">
-                  <span className="countdown-value">{text}</span>
-                </div>
-                <div className="countdown-half countdown-half-bottom" aria-hidden="true">
-                  <span className="countdown-value">{text}</span>
-                </div>
+              <div className="countdown-face">
+                <span className="countdown-value" key={text}>
+                  {text}
+                </span>
               </div>
               <span className="countdown-label">{countdownLabel(kind, value)}</span>
             </div>
