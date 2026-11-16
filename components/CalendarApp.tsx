@@ -25,6 +25,8 @@ const AFTER_CHRISTMAS = "Tutte le porte sono aperte. Rileggile quando vuoi.";
 const SHAKE_MS = 480;
 const TOAST_MS = 2400;
 const CONFETTI_MS = 1800;
+const REVEAL_DOORS_MS = 700;
+const REVEAL_DEMO_MS = 2800;
 
 const storeListeners = new Set<() => void>();
 let openedCache: number[] = EMPTY_OPENED;
@@ -200,12 +202,14 @@ export default function CalendarApp() {
   const [confettiId, setConfettiId] = useState(0);
   const [doorsRevealed, setDoorsRevealed] = useState(false);
   const [revealConfettiDone, setRevealConfettiDone] = useState(false);
+  const [revealDemo, setRevealDemo] = useState(false);
   const toastTimer = useRef<number | null>(null);
   const shakeStart = useRef<number | null>(null);
   const shakeStop = useRef<number | null>(null);
   const confettiTimer = useRef<number | null>(null);
   const dialogOpenerRef = useRef<HTMLButtonElement | null>(null);
   const revealTimer = useRef<number | null>(null);
+  const demoTimers = useRef<number[]>([]);
 
   useEffect(() => {
     try {
@@ -221,6 +225,7 @@ export default function CalendarApp() {
         window.clearTimeout(confettiTimer.current);
       }
       if (revealTimer.current !== null) window.clearTimeout(revealTimer.current);
+      for (const timer of demoTimers.current) window.clearTimeout(timer);
     };
   }, []);
 
@@ -229,7 +234,7 @@ export default function CalendarApp() {
 
   useEffect(() => {
     if (!playReveal) return;
-    const openDoors = window.setTimeout(() => setDoorsRevealed(true), 700);
+    const openDoors = window.setTimeout(() => setDoorsRevealed(true), REVEAL_DOORS_MS);
     const endConfetti = window.setTimeout(
       () => setRevealConfettiDone(true),
       CONFETTI_MS,
@@ -268,6 +273,29 @@ export default function CalendarApp() {
         setShakingDay(null);
       }, SHAKE_MS);
     }, 16);
+  }
+
+  function replayReveal(): void {
+    for (const timer of demoTimers.current) window.clearTimeout(timer);
+    const motion = allowsMotion();
+    setRevealDemo(true);
+    setRevealConfettiDone(!motion);
+    setDoorsRevealed(!motion);
+    const timers: number[] = [];
+    if (motion) {
+      timers.push(
+        window.setTimeout(() => setDoorsRevealed(true), REVEAL_DOORS_MS),
+        window.setTimeout(() => setRevealConfettiDone(true), CONFETTI_MS),
+      );
+    }
+    timers.push(
+      window.setTimeout(() => {
+        setRevealDemo(false);
+        setRevealConfettiDone(true);
+        setDoorsRevealed(false);
+      }, motion ? REVEAL_DEMO_MS : 1200),
+    );
+    demoTimers.current = timers;
   }
 
   function queueConfetti(): void {
@@ -310,13 +338,31 @@ export default function CalendarApp() {
           <p className="advent-lede">Una porta al giorno. Le altre aspettano.</p>
         </header>
         {now !== null && isBeforeCampaign(now) ? (
+          <button
+            type="button"
+            className="btn reveal-demo"
+            onClick={replayReveal}
+            disabled={revealDemo}
+          >
+            Prova i coriandoli
+          </button>
+        ) : null}
+        {now !== null && isBeforeCampaign(now) && !revealDemo ? (
           <Countdown now={now} />
-        ) : now !== null && (!isRevealDay(now) || !playReveal || doorsRevealed) ? (
+        ) : now !== null &&
+          (revealDemo
+            ? doorsRevealed
+            : !isBeforeCampaign(now) &&
+              (!isRevealDay(now) || !playReveal || doorsRevealed)) ? (
           <>
-            <p className="advent-status">{statusMessage(now)}</p>
+            {revealDemo ? null : (
+              <p className="advent-status">{statusMessage(now)}</p>
+            )}
             <div
               className={
-                isRevealDay(now) ? "advent-grid is-revealing" : "advent-grid"
+                isRevealDay(now) || revealDemo
+                  ? "advent-grid is-revealing"
+                  : "advent-grid"
               }
             >
               {gifts.map((gift, index) => {
@@ -329,7 +375,9 @@ export default function CalendarApp() {
                     state={state}
                     opened={state !== "locked" && opened.includes(gift.day)}
                     shaking={shakingDay === gift.day}
-                    delayMs={isRevealDay(now) ? index * 35 : undefined}
+                    delayMs={
+                      isRevealDay(now) || revealDemo ? index * 35 : undefined
+                    }
                     onClick={(opener) => selectDoor(gift.day, opener)}
                   />
                 );
@@ -349,7 +397,7 @@ export default function CalendarApp() {
             {toast}
           </p>
         ) : null}
-        {playReveal && !revealConfettiDone ? (
+        {(playReveal || revealDemo) && !revealConfettiDone ? (
           <div className="confetti confetti-reveal" aria-hidden="true">
             {REVEAL_CONFETTI.map((bit) => (
               <span key={bit} className="confetti-bit" />
